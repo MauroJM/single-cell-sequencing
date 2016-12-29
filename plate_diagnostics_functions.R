@@ -264,24 +264,26 @@ read_files <- function(dir = "", name = Sys.Date()){
 
 # check expression in empty corner of plate and calculate "leakyness" from highly expressed genes
 leakygenes<-function(data){
-  corner<-data[corner]
+  corner<-data[emptywells] # subset data to 8 wells specified in diagnotics script as empty corner
   names(corner)<-c("O21","O22","O23","O24","P21","P22","P23","P24")
-  genes<-apply(data,2,function(x) sum(x>=1))
-  genes.corner<-apply(rmspike(corner),2,function(x) sum(x>=1))
-  spike.corner<-colSums(keepspike(corner))
+  genes<-apply(data,2,function(x) sum(x>=1)) # check how many genes are detected
+  genes.corner<-apply(rmspike(corner),2,function(x) sum(x>=1)) # remove ERCC reads
+  spike.corner<-colSums(keepspike(corner)) # keep only ERCC reads
   genespike<-data.frame(genes=genes.corner,ERCC=spike.corner)
-  # check if the corner wells were actually empty
-  if(length(which(genes.corner > mean(genes/4))) !=0){
-    warning(paste("Not all 8 corner samples seem to be empty in", names[[i]]))
-  }
-  # plot genes/cell and ERCC reads/cell for corner wells
-  par(mar = c(5, 4, 6, 1))
-  barplot(t(genespike),main="total genes and ERCCs \n in empty corner",
+  if(length(which(genes.corner > mean(genes/5))) != 0){
+    stop(paste("Not all 8 corner samples are empty in", names[[i]],": won't be plotted"))
+  } else {# check if the corner wells were actually empty, otherwise stop
+        # plot genes/cell and ERCC reads/cell for corner wells
+    par(mar = c(5, 4, 6, 1))
+    barplot(t(genespike),main="total genes and ERCCs \n in empty corner",
           col=c("blue","red"),space=rep(c(0.7,0),8),cex.names = 0.8,las=3,beside=TRUE,
           legend=colnames(genespike),args.legend = list(x = "topright", bty = "n",horiz=TRUE,inset=c(0,-0.25)))
-  
+    }
   # determine top expressed genes in corner and compare to mean expressed genes in plate
-  cornerz<-corner[which(spike.corner>100)]  # take only wells which worked (>100 ERCC reads)
+  if( length(which(spike.corner > 75)) == 0){
+    stop(paste("There are no samples with more than 75 ERCC reads in", names[[i]]))
+  }  
+  cornerz<-corner[which(spike.corner>75)]  # take only wells which worked (>75 ERCC reads)
   cornerz<-rmspike(cornerz) # remove ERCCs
   mean.corner<-apply(cornerz,1,sum)[order(apply(cornerz,1,sum),decreasing=TRUE)][1:50] # pick top 50 in corner
   mean.all<-apply(data,1,sum)[order(apply(data,1,sum),decreasing=TRUE)][1:200] # pick top 200 in plate
