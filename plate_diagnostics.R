@@ -54,7 +54,7 @@ for(i in 1:length(tc)){ colnames(tc[[i]])<-paste(names[[i]],c(1:384),sep="_") }
 
 # OPTIONAL: rename part of a specified plate if you have different experiments in one plate
 # do this only for one of the .coutt files at the time by choosing the correct location in the .coutt list (eg:tc[[5]])
-# and manually specify which cells(eg: 1:384) are renamed to what (eg:"alpha"/"beta")
+# and manually specify the names of the experiments (eg:"alpha"/"beta") and the cell labels (eg: 1:192), in total should be 384 cells.
 names(tc[[5]])<-c(paste("alpha",c(1:192),sep="_"),paste("beta",c(1:192),sep="_")) 
 
 #### diagnostic plots####
