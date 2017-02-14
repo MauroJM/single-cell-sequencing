@@ -10,7 +10,7 @@
 
 ####install/load packages and variables####
 # install.packages("oce") # install this package upon first use
-source("~/AvO_lab/R/scripts/plate_diagnostics_functions2.R") # specify path to functions file
+source("~/AvO_lab/R/scripts/plate_diagnostics_functions.R") # specify path to functions file
 require(RColorBrewer)
 require(oce)
 
